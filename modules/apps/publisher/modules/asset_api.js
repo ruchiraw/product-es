@@ -118,6 +118,7 @@ var responseProcessor = require('utils').response;
         am.update(asset);
     };;
     api.search = function(options, req, res, session) {
+        var asset = require('rxt').asset;
         var assetManager = asset.createUserAssetManager(session, options.type);
         var sort = (request.getParameter("sort") || '');
         var sortOrder = DEFAULT_PAGIN.sortOrder;
@@ -174,7 +175,7 @@ var responseProcessor = require('utils').response;
     };
 
     api.get = function(options, req, res, session) {
-        
+        var asset = require('rxt').asset;
         var assetManager = asset.createUserAssetManager(session, options.type);
         try {
             var retrievedAsset = assetManager.get(options.id);
