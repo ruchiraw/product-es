@@ -28,6 +28,13 @@
     <artifactId>sso.feature</artifactId>
     <packaging>pom</packaging>
     <name>sso Module - Feature</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.store</groupId>
+            <artifactId>org.wso2.store.sso.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -81,6 +88,9 @@
                         <configuration>
                             <id>org.wso2.store.modules.sso</id>
                             <propertiesFile>etc/feature.properties</propertiesFile>
+                            <bundles>
+                                <bundleDef>org.wso2.store:org.wso2.store.sso.common</bundleDef>
+                            </bundles>
                         </configuration>
                     </execution>
                 </executions>
