@@ -90,7 +90,11 @@ var asset = {};
             var items = processOptionTextList(list);
             attributes[attrName] = items;
         } else {
-            attributes[attrName] = data[attrName];
+            if (data[attrName]) {
+                attributes[attrName] = data[attrName];
+            } else {
+                log.debug(attrName + ' will not be saved.');
+            }
         }
         return attributes;
     };
@@ -133,7 +137,15 @@ var asset = {};
     AssetManager.prototype.update = function(options) {
         this.am.update(options);
     };
-    AssetManager.prototype.remove = function(options) {};
+    AssetManager.prototype.remove = function(id) {
+        if (!id) {
+            throw 'The asset manager delete method requires an id to be provided.';
+        }
+        if (!this.am) {
+            throw 'An artifact manager instance manager has not been set for this asset manager.Make sure init method is called prior to invoking other operations.';
+        }
+        this.am.remove(id);
+    };
     /**
      * The method is responsible for updating the provided asset with the latest
      * values in the registry.If the asset is not succsessfully synched with the registry
@@ -275,6 +287,62 @@ var asset = {};
         }
         return success;
     };
+    /**
+     * The function sets the check item at the provided index to the given state
+     * @param  {[type]} asset          [description]
+     * @param  {[type]} checkItemIndex The index of the check list item to be invoked
+     * @param  {[type]} checkItemState A boolean value which indicates the state of the check item
+     *                                 (checked=true and unchecked=false)
+     * @return {[type]}                A boolean value indicating whether the check item state was changed
+     */
+    AssetManager.prototype.invokeLifecycleCheckItem = function(asset, checkItemIndex, checkItemState) {
+        var success = false;
+        if (!asset) {
+            log.warn('Unable to locate asset details in order to invoke check item state change');
+            return success;
+        }
+        //Check if a check item state has been provided
+        if (checkItemState == null) {
+            log.warn('The check item at index ' + checkItemIndex + ' cannot be changed as the check item state is not provided.');
+            return success;
+        }
+        //Obtain the number of check items for this state
+        var checkItems = this.getLifecycleCheckItems(asset);
+        //Check if the check item index is valid
+        if ((checkItemIndex < 0) || (checkItemIndex > checkItems.length)) {
+            log.error('The provided check item index ' + checkItemIndex + ' is not valid.It must be between 0 and ' + checkItems.length);
+            throw 'The provided check item index ' + checkItemIndex + ' is not valid.It must be between 0 and ' + checkItems.length;
+        }
+        success = true; //Assume the check item invocation will succeed
+        //These methods do not return a boolean value indicating if the item was checked or unchecked
+        //TODO: We could invoke getCheckLifecycleCheckItems and check the item index to see if the operation was successfull.
+        try {
+            if (checkItemState == true) {
+                this.am.checkItem(checkItemIndex, asset);
+            } else {
+                this.am.uncheckItem(checkItemIndex, asset);
+            }
+        } catch (e) {
+            log.error(e);
+            success = false;
+        }
+        return success;
+    };
+    /**
+     * The function returns all of the check items for the current state in which the provided
+     * asset is in
+     * @param  {[type]} asset [description]
+     * @return {[type]}       An array of check items along with the checked state
+     */
+    AssetManager.prototype.getLifecycleCheckItems = function(asset) {
+        var checkItems = [];
+        try {
+            checkItems = this.am.getCheckListItemNames(asset);
+        } catch (e) {
+            log.error(e);
+        }
+        return checkItems;
+    };
     AssetManager.prototype.createVersion = function(options, newVersion) {};
     AssetManager.prototype.getName = function(asset) {
         var nameAttribute = this.rxtManager.getNameAttribute(this.type);
@@ -368,14 +436,19 @@ var asset = {};
         return modAsset;
     };
     AssetManager.prototype.render = function(assets, page) {
-        var refUtil = require('utils').reflection;
-        //Combine with the rxt template only when dealing with a single asset
-        if (refUtil.isArray(assets)) {
-            page.assets = assets;
-        } else {
-            page.assets = this.combineWithRxt(assets);
-            page.assets.name = this.getName(assets);
-            page.assets.thumbnail = this.getThumbnail(assets);
+        //Only process assets if both assets and pages are provided
+        if (arguments.length == 2) {
+            var refUtil = require('utils').reflection;
+            //Combine with the rxt template only when dealing with a single asset
+            if (refUtil.isArray(assets)) {
+                page.assets = assets;
+            } else {
+                page.assets = this.combineWithRxt(assets);
+                page.assets.name = this.getName(assets);
+                page.assets.thumbnail = this.getThumbnail(assets);
+            }
+        } else if (arguments.length == 1) {
+            page = arguments[0];
         }
         page.rxt = this.rxtTemplate;
         var that = this;
@@ -406,6 +479,11 @@ var asset = {};
             },
             lifecycle: function() {
                 page = that.r.lifecycle(page) || page;
+                page = that.r.leftNav(page) || page;
+                page = that.r.ribbon(page) || page;
+                return page;
+            },
+            _custom: function() {
                 page = that.r.leftNav(page) || page;
                 page = that.r.ribbon(page) || page;
                 return page;
