@@ -220,7 +220,8 @@ var result;
 
         try {
             putInStorage(asset, am);//save to the storage
-            am.create(asset);
+            am.initiateCreate(asset);
+            //am.create(asset);
         } catch (e) {
             log.error('Asset of type: ' + options.type + ' was not created due to ' + e);
             return null;

@@ -164,6 +164,16 @@ var asset = {};
         this.am = new carbon.registry.ArtifactManager(this.registry, this.type);
     };
     /**
+     * Creates a new asset instance in a workflow aware manner.The method first checks whether
+     * a workflow has been enabled.If a workflow is enabled for asset create action then
+     * it is initiated,else the asset create logic is invoked
+     * @param  Object options The asset to be created
+     */
+    AssetManager.prototype.initiateCreate = function(options){
+        log.info('Initiate Create called.');
+        this.create(options);
+    };
+    /**
      * Creates a new asset instance by calling the underlying artifact manager on
      * a JSON object representing the asset.If the asset is added successfully the
      * an id property is added to the options object and is updated with the id
