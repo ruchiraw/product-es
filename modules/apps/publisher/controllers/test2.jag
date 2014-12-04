@@ -1,5 +1,10 @@
 <%
-var artifacts = require('rxt').artifacts;
+//var utils = require('utils');
+var utils = requireRooted('utils');
+
+//var api = require('/modules/asset_api.js');
+print('Test');
+/*var artifacts = require('rxt').artifacts;
 var workflows = require('rxt').workflows;
 var log = new Log();
 
@@ -8,7 +13,7 @@ var b  = ['2'];
 var c  = a.filter(function(n){
 		return (b.indexOf(n)<0);
 	});
-log.info(c);
+log.info(c);*/
 //artifacts.loadDirectory('/extensions/assets/gadget', -1234);
 //var afm = artifacts.artifactMap();
 //log.info(afm);
