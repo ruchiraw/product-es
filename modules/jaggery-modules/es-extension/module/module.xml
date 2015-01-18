@@ -1,0 +1,11 @@
+<module name="es-extension" xmlns="http://wso2.org/projects/jaggery/module.xml">
+   <script>
+       <name>core</name>
+       <path>scripts/core/core.js</path>
+   </script>
+   <script>
+   	<name>engine</name>
+   	<path>scripts/engine/engine.js</path>
+   </script>
+</module>
+

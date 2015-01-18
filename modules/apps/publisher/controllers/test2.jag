@@ -1,9 +1,111 @@
 <%
+
+function Actor(){
+    this.l = new Log();
+}
+Actor.prototype.act = function(){
+    this.l.info('Empty acting');
+};
+
+function ComedyActor(){
+    this.l = new Log();
+}
+ComedyActor.prototype = Object.create(Actor.prototype);
+ComedyActor.prototype.act = function(){
+    this.l.info('Comedic acting');
+};
+
+var a = new Actor();
+var b = new ComedyActor();
+
+a.act();
+b.act();
+var c = require('es-extension');
+var log = new Log();
+
+c.core.test();
+
+// var inherit = function(parent,child){
+// 	child.prototype = new parent;
+// 	child.constructor = child;
+// 	child.prototype._super = parent.prototype;
+// };
+
+// var HashMap = java.util.HashMap;
+
+// var map = new HashMap();
+// map.put('aa','aa');
+// var result = map.get('aa');
+// print(result);
+
+// var inherit = function(parent){
+// 	function F(){};
+// 	F.prototype = parent;
+// 	return new F();
+// };
+
+// var Animal ={
+// 	eat:function(){
+// 		var log = new Log();
+// 		log.info('Animal is eating');
+// 	},
+// 	walk:function(){
+// 		var log = new Log();
+// 		log.info('Animal is walking');
+// 	}
+// };
+
+// var Cat = inherit(Animal);
+
+// Cat.walk = function(){
+// 	var log = new Log();
+// 	log.info('Cat is walking');
+// };
+
+
+// var animal = Object.create(Animal);
+// var cat = Object.create(Cat);
+
+// cat.eat();
+// cat.walk();
+// animal.eat();
+// animal.walk();
+
+// var inherit = function(child,parent){
+// 	child.prototype = Object.create(parent.prototype);
+// 	child.prototype.constructor = child;
+// };
+//  function Mamamal(){
+//  	this.log = new Log();
+//  }
+//  Mamamal.prototype.breathe = function(){
+//  	this.log.info('Mamamal is breathing');
+//  };
+
+//  function Cat(){
+//  	Mamamal.call(this);
+//  	this.log = new Log();
+//  }
+//  Cat.prototype.eat = function(){
+
+//  };
+//  Cat.prototype.meow = function(){
+//  	this.log.info('Cat is meowing');
+//  };
+
+//  inherit(Cat,Mamamal);
+
+//  var cat = new Cat();
+
+//  cat.breathe();
+//  cat.eat();
+//  cat.meow();
+
 //var utils = require('utils');
-var utils = requireRooted('utils');
+//var utils = requireRooted('utils');
 
 //var api = require('/modules/asset_api.js');
-print('Test');
+//print('Test');
 /*var artifacts = require('rxt').artifacts;
 var workflows = require('rxt').workflows;
 var log = new Log();
