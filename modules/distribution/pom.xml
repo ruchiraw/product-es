@@ -1,16 +1,33 @@
 <?org.wso2.uesxml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.store</groupId>
         <artifactId>wso2es-parent</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>wso2es</artifactId>
-    <packaging>jar</packaging>
     <name>WSO2 Enterprise Store - Distribution</name>
     <description>WSO2 Enterprise Store Distribution</description>
     <dependencies>
@@ -27,6 +44,7 @@
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
         </dependency>
+        
     </dependencies>
     <build>
         <plugins>
@@ -131,6 +149,40 @@
                                             dir="${tempdir}/${project.artifactId}-${project.version}/repository/components">
                                     </fileset>
                                 </copy>
+                                
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${tempdir}/${project.artifactId}-${project.version}/repository/components">
+                                    </fileset>
+                                </copy>
+
+                                <replace
+                                        file="../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/security/identity-mgt.properties"
+                                        token="Identity.Listener.Enable=false" value="Identity.Listener.Enable=true"/>
+
+                                <replace
+                                        file="../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/security/identity-mgt.properties"
+                                        token="Notification.Expire.Time=0" value="Notification.Expire.Time=3"/>
+
+                                <replace
+                                        file="../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/security/identity-mgt.properties"
+                                        token="UserAccount.Recovery.Enable=false" value="UserAccount.Recovery.Enable=true"/>
+
+                                <replace
+                                        file="../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/email/email-admin-config.xml"
+                                        token="https://localhost:8443/InfoRecoverySample/infoRecover/verify?confirmation={confirmation-code}"
+                                        value="https://localhost:9443/sso/reset-link?confirmation={confirmation-code}&amp;amp;username={user-name}"/>
+                                
+                                <!--
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/samples"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${tempdir}/${project.artifactId}-${project.version}/samples">
+                                    </fileset>
+                                </copy>
+                                -->
+                                
                                 <!--testing -->
                                 <unzip src="target/shindig/WEB-INF/lib/shindig-common-${shindig.version}.jar"
                                        dest="${jardir}/shindig-common-${shindig.version}">
@@ -140,6 +192,8 @@
                                 </unzip>
                                 <copy file="src/repository/conf/shindig.properties"
                                       todir="${jardir}/shindig-common-${shindig.version}"/>
+                                      
+                                      
                                 <delete file="target/shindig/WEB-INF/lib/shindig-common-${shindig.version}.jar"/>
                                 <zip destfile="target/shindig/WEB-INF/lib/shindig-common-${shindig.version}.jar"
                                      basedir="${jardir}/shindig-common-${shindig.version}"/>
@@ -151,7 +205,7 @@
                                 <!--<zip destfile="target/ROOT.war"
                                      basedir="target/shindig"  />-->
                                 <concat destfile="target/wso2carbon-core-${carbon.kernel.version}/repository/log4j.properties">
-                                    og4j.logger.net.sf.ehcache=ERROR
+                                    log4j.logger.net.sf.ehcache=ERROR
                                 </concat>
                                 <delete file="target/${project.artifactId}-${project.version}.zip"/>
                                 <delete dir="${tempdir}"/>
@@ -205,6 +259,29 @@
                     </execution>
                     <!-- End of fix -->
                     <execution>
+                        <id>social-h2-table-gen</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo message="########### Create Social Database ##############"/>
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/dbscripts/social"
+                                      overwrite="false">
+                                    <fileset
+                                            dir="${basedir}/../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/social/">
+                                    </fileset>
+                                </copy>
+                                <path id="h2.classpath">
+                                    <path refid="maven.compile.classpath"/>
+                                </path>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <!-- End of fix -->
+                    
+                    <execution>
                         <id>clean_target</id>
                         <phase>install</phase>
                         <configuration>
@@ -249,6 +326,9 @@
                                 <descriptor>${basedir}/src/assembly/dist.xml</descriptor>
                             </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
+                            
+
+          
                         </configuration>
                     </execution>
                     <execution>
@@ -258,9 +338,11 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
+                          
                             <filters>
                                 <filter>${basedir}/src/assembly/filter.properties</filter>
                             </filters>
+                              
                             <descriptors>
                                 <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
                                 <!-- <descriptor>${basedir}/src/assembly/docs.xml</descriptor>-->
@@ -268,6 +350,8 @@
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
+                    
+
                 </executions>
             </plugin>
             <plugin>
@@ -285,4 +369,6 @@
             </plugin>
         </plugins>
     </build>
+    
+
 </project>
