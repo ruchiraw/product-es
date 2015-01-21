@@ -90,7 +90,7 @@
                             <bundles>
                                 <bundleDef>slf4j.wso2:slf4j:${slf4j.wso2.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.hostobjects.sso</bundleDef>-->
-                                <bundleDef>org.wso2.store:org.wso2.store.sso.common</bundleDef>
+                                <!--<bundleDef>org.wso2.store:org.wso2.store.sso.common</bundleDef>-->
 
                                 <bundleDef>org.wso2.store:org.wso2.store.bamclient</bundleDef>
 
@@ -171,13 +171,13 @@
                                 </importFeatureDef>
                                 <importFeatureDef>
                                     org.wso2.carbon.registry.ui.menu:${carbon.platform.version}
-                                </importFeatureDef>>
+                                </importFeatureDef>
                                 <importFeatureDef>
                                     org.wso2.carbon.registry.resource.properties.server:${carbon.platform.version}
                                 </importFeatureDef>
                                 <importFeatureDef>
                                     org.wso2.carbon.registry.ui.menu.governance:${carbon.platform.version}
-                                </importFeatureDef>>
+                                </importFeatureDef>
                                 <importFeatureDef>
                                     org.wso2.carbon.registry.contentsearch.server:${carbon.platform.version}
                                 </importFeatureDef>
